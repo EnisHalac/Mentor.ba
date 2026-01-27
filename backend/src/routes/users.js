@@ -4,7 +4,6 @@ import { prisma } from "../prisma.js";
 
 const router = Router();
 
-// GET /users (da radi u browseru)
 router.get("/", async (req, res) => {
   const users = await prisma.user.findMany({
     select: { id: true, email: true, name: true, role: true, createdAt: true },
@@ -13,7 +12,6 @@ router.get("/", async (req, res) => {
   res.json({ ok: true, users });
 });
 
-// POST /users (kreiranje usera)
 router.post("/", async (req, res) => {
   try {
     const { email, password, name } = req.body;
@@ -25,6 +23,10 @@ router.post("/", async (req, res) => {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return res.status(409).json({ ok: false, message: "email je vec registrovan" });
+    }
+
+    if (typeof email !== "string" || !email.includes("@")) {
+        return res.status(400).json({ ok: false, message: "email nije validan, mora sadržavati @" });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
