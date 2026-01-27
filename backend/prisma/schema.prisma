@@ -4,11 +4,71 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
 
 datasource db {
   provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum WorkMode {
+  ONLINE
+  HYBRID
+  ONSITE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  instructor InstructorProfile?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InstructorProfile {
+  id        Int     @id @default(autoincrement())
+  userId    Int     @unique
+  verified  Boolean @default(false)
+  xp        Int     @default(0)
+
+  user      User    @relation(fields: [userId], references: [id])
+  listings  Listing[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Listing {
+  id          Int        @id @default(autoincrement())
+  instructorId Int
+  title       String
+  description String
+  category    String
+  pricePerHour Int
+  level       SkillLevel
+  mode        WorkMode
+  location    String?    // za ONSITE/HYBRID
+  isActive    Boolean    @default(true)
+
+  instructor  InstructorProfile @relation(fields: [instructorId], references: [id])
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
