@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import {prisma} from "./prisma.js";
+import listingsRouter from "./routes/listings.js";
 
 dotenv.config();
 
@@ -18,3 +19,5 @@ app.get("/db-test", async (req, res) => {
     const userCount = await prisma.user.count();
     res.json({ ok : true ,userCount });
 });
+
+app.use("/listings", listingsRouter);
