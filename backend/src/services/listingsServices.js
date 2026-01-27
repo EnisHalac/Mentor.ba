@@ -1,13 +1,7 @@
-import { Router } from "express";
 import { prisma } from "../prisma.js";
 
-const router = Router();
-
-/**
- * GET /listings
- */
-router.get("/", async (req, res) => {
-  const { category, minPrice, maxPrice, mode, location, level } = req.query;
+export async function listListings(filters) {
+  const { category, minPrice, maxPrice, mode, location, level } = filters;
 
   const where = {
     isActive: true,
@@ -25,19 +19,18 @@ router.get("/", async (req, res) => {
       : {}),
   };
 
-  const listings = await prisma.listing.findMany({
+  return prisma.listing.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    include: { instructor: { include: { user: true } } },
+    include: {
+      instructor: {
+        include: { user: true },
+      },
+    },
   });
+}
 
-  res.json({ ok: true, listings });
-});
-
-/**
- * POST /listings
- */
-router.post("/", async (req, res) => {
+export async function createListing(payload) {
   const {
     instructorId,
     title,
@@ -47,13 +40,20 @@ router.post("/", async (req, res) => {
     level,
     mode,
     location,
-  } = req.body;
+  } = payload;
 
-  if (!instructorId || !title || !description || !category || !pricePerHour || !level || !mode) {
-    return res.status(400).json({ ok: false, message: "Missing required fields" });
+  const instructor = await prisma.instructorProfile.findUnique({
+    where: { id: Number(instructorId) },
+    select: { id: true },
+  });
+
+  if (!instructor) {
+    const err = new Error("INSTRUCTOR_NOT_FOUND");
+    err.status = 404;
+    throw err;
   }
 
-  const listing = await prisma.listing.create({
+  return prisma.listing.create({
     data: {
       instructorId: Number(instructorId),
       title,
@@ -62,11 +62,8 @@ router.post("/", async (req, res) => {
       pricePerHour: Number(pricePerHour),
       level,
       mode,
-      location: location || null,
+      location: location ?? null,
+      isActive: true,
     },
   });
-
-  res.status(201).json({ ok: true, listing });
-});
-
-export default router;
+}

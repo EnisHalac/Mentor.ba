@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import {prisma} from "./prisma.js";
-import listingsRouter from "./routes/listings.js";
-import usersRouter from "./routes/users.js";
+import listingsRouter from "./routes/listingsRoutes.js";
+import usersRouter from "./routes/usersRoutes.js";
 
 dotenv.config();
 
