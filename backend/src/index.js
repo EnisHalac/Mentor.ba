@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import {prisma} from "./prisma.js";
 import listingsRouter from "./routes/listings.js";
+import usersRouter from "./routes/users.js";
 
 dotenv.config();
 
@@ -21,3 +22,4 @@ app.get("/db-test", async (req, res) => {
 });
 
 app.use("/listings", listingsRouter);
+app.use("/users", usersRouter);
