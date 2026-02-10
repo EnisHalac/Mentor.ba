@@ -1,15 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Register from "./pages/register";
+import Login from "./pages/Login"; 
 
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <h1 className="text-4xl font-bold text-green-400">
-        Mentor.ba Tailwind radi 🚀
-      </h1>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<h1>Home - Platforma za Znanje</h1>} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
