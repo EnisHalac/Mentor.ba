@@ -1,15 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import Register from "./pages/Register";
+import Login from "./pages/Login"; 
+import Home from "./pages/Home";
 
 function App() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="flex h-screen items-center justify-center text-2xl font-bold">Učitavanje...</div>;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <h1 className="text-4xl font-bold text-green-400">
-        Mentor.ba Tailwind radi 🚀
-      </h1>
-    </div>
+    <Router>
+      <Routes>
+        
+        <Route path="/" element={user ? <Home /> : <Navigate to="/Login" />} />
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 

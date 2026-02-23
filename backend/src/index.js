@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import {prisma} from "./prisma.js";
 import usersRouter from "./routes/usersRoutes.js";
+import authRouter from "./routes/authRoutes.js";
+import listingsRouter from "./routes/listingsRoutes.js";
 
 dotenv.config();
 
@@ -20,4 +22,8 @@ app.get("/db-test", async (req, res) => {
     res.json({ ok : true ,userCount });
 });
 
-app.use("/users", usersRouter);
+app.use("/api/auth", authRouter);
+
+app.use("/api/users", usersRouter);
+
+app.use("/api/listings", listingsRouter);
