@@ -1,5 +1,5 @@
 import { isValidEmail, isValidPassword } from "../utils/validators.js";
-import { createUser, listUsers } from "../services/usersServices.js";
+import { createUser, listUsers, updateUser } from "../services/usersServices.js";
 
 export async function getUsers(req, res) {
   const users = await listUsers();
@@ -28,5 +28,16 @@ export async function postUser(req, res) {
     }
     console.error(err);
     return res.status(500).json({ ok: false, message: "server error" });
+  }
+}
+
+
+export async function putUser(req, res) {
+  try {
+    const updatedUser = await updateUser(req.user.id, req.body);
+    return res.json({ ok: true, user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false, message: "Greška pri ažuriranju profila" });
   }
 }

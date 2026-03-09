@@ -5,7 +5,7 @@ import {prisma} from "./prisma.js";
 import usersRouter from "./routes/usersRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import listingsRouter from "./routes/listingsRoutes.js";
-
+import adminRouter from "./routes/adminRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -27,3 +27,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 
 app.use("/api/listings", listingsRouter);
+
+app.use("/api/admin", adminRouter);

@@ -30,7 +30,7 @@ export const registerUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        roleId: userRole.id, 
+        roleId: 4, 
       },
       include: { role: true }, 
     });

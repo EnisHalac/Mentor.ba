@@ -12,7 +12,7 @@ export async function createUser({ email, password, name }) {
   const passwordHash = await bcrypt.hash(password, 10);
 
   const user = await prisma.user.create({
-    data: { email, password: passwordHash, name: name ?? null },
+    data: { email, password: passwordHash, name: name ?? null ,roleId: 4},
     select: { id: true, email: true, name: true, role: true, createdAt: true },
   });
 
@@ -25,3 +25,16 @@ export async function listUsers() {
     orderBy: { id: "desc" },
   });
 }
+
+export async function updateUser(userId, data) {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      avatar: data.avatar,
+      portfolioUrl: data.portfolioUrl
+    },
+    select: { id: true, email: true, name: true, avatar: true, portfolioUrl: true, role: true }
+  });
+}
+
