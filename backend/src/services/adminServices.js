@@ -37,9 +37,20 @@ export const processRejection = async (requestId, reason) => {
 
 export const getSystemStats = async () => {
   const [users, mentors, pending] = await Promise.all([
-    prisma.user.count(),
-    prisma.user.count({ where: { roleId: 5 } }),
+    prisma.user.count({ where: { roleId: 7 } }),
+    prisma.user.count({ where: { roleId: 8 } }),
     prisma.mentorRequest.count({ where: { status: "PENDING" } })
   ]);
   return { users, mentors, pending };
+};
+
+export const getAllListings = async () => {
+  return await prisma.listing.findMany({
+    include: { author: { select: { name: true, email: true } } }, 
+    orderBy: { createdAt: 'desc' }
+  });
+};
+
+export const deleteListing = async (id) => {
+  return await prisma.listing.delete({ where: { id: Number(id) } });
 };

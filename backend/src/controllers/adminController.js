@@ -31,8 +31,27 @@ export const rejectMentor = async (req, res) => {
 export const getStats = async (req, res) => {
   try {
     const stats = await adminService.getSystemStats();
-    res.json(stats);
+    return res.status(200).json(stats); 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Admin Stats Error:", err);
+    return res.status(500).json({ message: "Greška pri učitavanju statistike." });
+  }
+};
+
+export const getListings = async (req, res) => {
+  try {
+    const listings = await adminService.getAllListings();
+    res.json(listings);
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri dohvatanju oglasa." });
+  }
+};
+
+export const deleteListing = async (req, res) => {
+  try {
+    await adminService.deleteListing(req.params.id);
+    res.json({ ok: true, message: "Oglas obrisan" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška pri brisanju oglasa." });
   }
 };
