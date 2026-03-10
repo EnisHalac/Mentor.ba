@@ -14,12 +14,12 @@ export const registerUser = async (req, res) => {
   try {
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
-      return res.status(400).json({ message: "Korisnik sa ovim emailom već postoji." });
+      return res.status(400).json({ message: "User with this email already exists." });
     }
 
     const userRole = await prisma.role.findUnique({ where: { name: "USER" } });
     if (!userRole) {
-      return res.status(500).json({ message: "Sistemska greška: Uloge nisu seed-ovane u bazi." });
+      return res.status(500).json({ message: "System error: Roles are not seeded in the database." });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -41,8 +41,8 @@ export const registerUser = async (req, res) => {
       token: generateToken(user.id),
     });
   } catch (error) {
-    console.error("Greška pri registraciji:", error);
-    res.status(500).json({ message: "Greška na serveru." });
+    console.error("System error during registration:", error);
+    res.status(500).json({ message: "System error." });
   }
 };
 
@@ -62,10 +62,10 @@ export const loginUser = async (req, res) => {
         token: generateToken(user.id),
       });
     } else {
-      res.status(401).json({ message: "Pogrešan email ili lozinka." });
+      res.status(401).json({ message: "Invalid email or password." });
     }
   } catch (error) {
-    console.error("Greška pri loginu:", error);
-    res.status(500).json({ message: "Greška na serveru." });
+    console.error("System error during login:", error);
+    res.status(500).json({ message: "System error." });
   }
 };

@@ -19,12 +19,12 @@ export const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
-      res.status(401).json({ message: "Niste autorizovani, token nije ispravan" });
+      res.status(401).json({ message: "Invalid token" });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: "Niste autorizovani, nema tokena" });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 
@@ -32,6 +32,6 @@ export const isAdmin = (req, res, next) => {
   if (req.user && req.user.role.name === "ADMIN") {
     next();
   } else {
-    res.status(403).json({ message: "Pristup odbijen. Samo za administratore." });
+    res.status(403).json({ message: "Access denied. Only for administrators." });
   }
 };
