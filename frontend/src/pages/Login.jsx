@@ -33,7 +33,7 @@ export default function Login() {
         }
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Pogrešan email ili lozinka");
+      setError(err.response?.data?.message || "Invalid email or password.");
     }
   };
 

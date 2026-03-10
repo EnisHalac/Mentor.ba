@@ -21,16 +21,16 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!isValidEmail(formData.email)) return setError("Email nije validan.");
-    if (!isValidPassword(formData.password)) return setError("Lozinka mora imati min 6 karaktera.");
+    if (!isValidEmail(formData.email)) return setError("Email must be valid (must contain @).");
+    if (!isValidPassword(formData.password)) return setError("Password must have at least 6 characters.");
 
     setLoading(true);
     try {
       await registerUser(formData);
-      alert("Nalog kreiran uspješno!");
+      alert("Account created successfully!");
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Greška na serveru.");
+      setError(err.response?.data?.message || "Error on server.");
     } finally {
       setLoading(false);
     }

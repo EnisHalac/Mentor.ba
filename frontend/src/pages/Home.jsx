@@ -12,7 +12,7 @@ export default function Home() {
         const response = await apiClient.get("/listings");
         setListings(response.data);
       } catch (err) {
-        setError("Ne mogu učitati oglase.");
+        setError("Error fetching listings. Please try again later.");
       }
     };
     getListings();

@@ -5,7 +5,7 @@ import RejectModal from "../components/Admin/RejectModal";
 
 export default function AdminDashboard() {
   const [requests, setRequests] = useState([]);
-  const [listings, setListings] = useState([]); // NOVI STATE ZA OGLASE
+  const [listings, setListings] = useState([]); 
   const [stats, setStats] = useState({ users: 0, mentors: 0, pending: 0 });
   const [selectedReq, setSelectedReq] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,11 +13,10 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Sada dohvaćamo sva tri API endpointa odjednom
       const [reqRes, statRes, listRes] = await Promise.allSettled([
         apiClient.get("/admin/requests"),
         apiClient.get("/admin/stats"),
-        apiClient.get("/admin/listings") // DODAN POZIV ZA OGLASE
+        apiClient.get("/admin/listings")
       ]);
 
       if (reqRes.status === "fulfilled") setRequests(reqRes.value.data);
@@ -25,7 +24,7 @@ export default function AdminDashboard() {
       if (listRes.status === "fulfilled") setListings(listRes.value.data);
       
     } catch (err) {
-      console.error("Neočekivana greška u loadData:", err);
+      console.error("Unexpected error in loadData:", err);
     } finally {
       setLoading(false);
     }
@@ -34,7 +33,7 @@ export default function AdminDashboard() {
   useEffect(() => { loadData(); }, []);
 
   const handleApprove = async (id) => {
-    if(!confirm("Odobriti mentora?")) return;
+    if(!confirm("Approve mentor?")) return;
     await apiClient.post(`/admin/approve/${id}`);
     loadData();
   };
@@ -45,15 +44,14 @@ export default function AdminDashboard() {
     loadData();
   };
 
-  // Dodana funkcija za brisanje oglasa
   const handleDeleteListing = async (id) => {
-    if(!confirm("Jesi li siguran da želiš obrisati ovaj oglas?")) return;
+    if(!confirm("Are you sure you want to delete this listing?")) return;
     try {
       await apiClient.delete(`/admin/listings/${id}`);
-      loadData(); // Osvježi podatke nakon brisanja
+      loadData(); 
     } catch (err) {
-      console.error("Greška pri brisanju oglasa:", err);
-      alert("Nije uspjelo brisanje oglasa.");
+      console.error("Error deleting listing:", err);
+      alert("Error deleting listing. Please try again.");
     }
   };
 
@@ -71,7 +69,6 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto py-12 px-4">
         <h1 className="text-3xl font-black mb-8 text-gray-800 tracking-tight">Admin Dashboard</h1>
         
-        {/* STATISTIKA */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
             <p className="text-gray-400 text-xs font-bold uppercase">Korisnici</p>
@@ -87,7 +84,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ZAHTJEVI ZA MENTORE */}
         <div className="mb-10">
           <h2 className="text-xl font-black mb-4 text-gray-700">Zahtjevi za mentore</h2>
           <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100">
@@ -122,7 +118,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* LISTA OGLASA (LISTINGS) */}
         <div>
           <h2 className="text-xl font-black mb-4 text-gray-700">Svi Aktivni Oglasi</h2>
           <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100">

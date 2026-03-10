@@ -12,7 +12,7 @@ export const getRequests = async (req, res) => {
 export const approveMentor = async (req, res) => {
   try {
     await adminService.processApproval(req.params.id);
-    res.json({ ok: true, message: "Korisnik je postao mentor!" });
+    res.json({ ok: true, message: "Mentorship approved." });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -22,7 +22,7 @@ export const rejectMentor = async (req, res) => {
   try {
     const { reason } = req.body;
     await adminService.processRejection(req.params.id, reason);
-    res.json({ ok: true, message: "Zahtjev odbijen." });
+    res.json({ ok: true, message: "Mentorship rejected." });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -34,7 +34,7 @@ export const getStats = async (req, res) => {
     return res.status(200).json(stats); 
   } catch (err) {
     console.error("Admin Stats Error:", err);
-    return res.status(500).json({ message: "Greška pri učitavanju statistike." });
+    return res.status(500).json({ message: "Error fetching system stats." });
   }
 };
 
@@ -43,7 +43,7 @@ export const getListings = async (req, res) => {
     const listings = await adminService.getAllListings();
     res.json(listings);
   } catch (error) {
-    res.status(500).json({ message: "Greška pri dohvatanju oglasa." });
+    res.status(500).json({ message: "Error fetching listings." });
   }
 };
 
@@ -52,6 +52,6 @@ export const deleteListing = async (req, res) => {
     await adminService.deleteListing(req.params.id);
     res.json({ ok: true, message: "Oglas obrisan" });
   } catch (error) {
-    res.status(500).json({ message: "Greška pri brisanju oglasa." });
+    res.status(500).json({ message: "Error deleting listing." });
   }
 };

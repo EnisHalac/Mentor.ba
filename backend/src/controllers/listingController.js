@@ -21,7 +21,7 @@ export const createListing = async (req, res) => {
 export const deleteListing = async (req, res) => {
   try {
     await listingService.deleteListingById(req.params.id, req.user.id, req.user.role.name);
-    res.json({ message: "Oglas uspješno obrisan" });
+    res.json({ message: "Listing deleted successfully." });
   } catch (error) {
     res.status(403).json({ message: error.message });
   }

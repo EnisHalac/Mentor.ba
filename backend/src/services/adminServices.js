@@ -13,13 +13,13 @@ export const getAllPendingRequests = async () => {
 
 export const processApproval = async (requestId) => {
   const request = await prisma.mentorRequest.findUnique({ where: { id: parseInt(requestId) } });
-  if (!request) throw new Error("Zahtjev nije pronađen.");
+  if (!request) throw new Error("Request not found.");
 
   return await prisma.$transaction([
     prisma.user.update({ where: { id: request.userId }, data: { roleId: 5 } }),
     prisma.mentorRequest.update({ where: { id: parseInt(requestId) }, data: { status: "APPROVED" } }),
     prisma.notification.create({
-      data: { userId: request.userId, message: "Čestitamo! Vaš zahtjev za mentorstvo je ODOBREN.", type: "SUCCESS" }
+      data: { userId: request.userId, message: "Congratulations! Your mentorship request has been APPROVED.", type: "SUCCESS" }
     })
   ]);
 };
@@ -30,7 +30,7 @@ export const processRejection = async (requestId, reason) => {
   return await prisma.$transaction([
     prisma.mentorRequest.update({ where: { id: parseInt(requestId) }, data: { status: "REJECTED" } }),
     prisma.notification.create({
-      data: { userId: request.userId, message: `Zahtjev odbijen. Razlog: ${reason}`, type: "ERROR" }
+      data: { userId: request.userId, message: `Request rejected. Reason: ${reason}`, type: "ERROR" }
     })
   ]);
 };
