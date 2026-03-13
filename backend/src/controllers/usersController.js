@@ -1,5 +1,6 @@
 import { isValidEmail, isValidPassword } from "../utils/validators.js";
-import { createUser, listUsers , updateUser} from "../services/usersServices.js";
+import { createUser, listUsers, updateUser } from "../services/usersServices.js";
+import { prisma } from "../prisma.js";
 
 export async function getUsers(req, res) {
   const users = await listUsers();
@@ -26,19 +27,15 @@ export async function postUser(req, res) {
     if (err.message === "EMAIL_EXISTS") {
       return res.status(409).json({ ok: false, message: "Email is already registered" });
     }
-    console.error(err);
-    return res.status(500).json({ ok: false, message: "server error" });
+    return res.status(500).json({ ok: false, message: "Server error" });
   }
 }
 
-
 export async function putUser(req, res) {
   try {
-
     const updatedUser = await updateUser(req.user.id, req.body, req.file);
     return res.json({ ok: true, user: updatedUser });
   } catch (err) {
-    console.error(err);
     if (err.message === "INVALID_OLD_PASSWORD") {
       return res.status(400).json({ ok: false, message: "Invalid old password" });
     }
@@ -48,3 +45,27 @@ export async function putUser(req, res) {
     return res.status(500).json({ ok: false, message: "Error occurred while updating profile" });
   }
 }
+
+export const getMyNotifications = async (req, res) => {
+  try {
+    const notifications = await prisma.notification.findMany({
+      where: { userId: req.user.id, isRead: false }, 
+      orderBy: { createdAt: "desc" }
+    });
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching notifications" });
+  }
+};
+
+export const markNotificationsAsRead = async (req, res) => {
+  try {
+    await prisma.notification.updateMany({
+      where: { userId: req.user.id, isRead: false },
+      data: { isRead: true }
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating notifications" });
+  }
+};

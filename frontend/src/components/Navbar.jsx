@@ -1,13 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
+    setIsOpen(false);
     logout();
     navigate("/login");
   };
@@ -41,7 +55,7 @@ export default function Navbar() {
               <p className="text-[10px] uppercase tracking-widest text-indigo-500 font-bold mt-1">{user?.role?.name || user?.role}</p>
             </div>
 
-            <div className="relative group">
+            <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center focus:outline-none"
@@ -53,15 +67,23 @@ export default function Navbar() {
                 />
               </button>
 
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto">
-                <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 transition font-medium">Moj Profil</Link>
-                <button 
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition font-medium"
-                >
-                  Odjavi se
-                </button>
-              </div>
+              {isOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  <Link 
+                    to="/profile" 
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 transition font-medium"
+                  >
+                    Moj Profil
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition font-medium"
+                  >
+                    Odjavi se
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

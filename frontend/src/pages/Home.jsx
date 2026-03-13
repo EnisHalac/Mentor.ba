@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
 import Navbar from "../components/Navbar";
+import UserNotifications from "../components/UserNotifications";
 
 export default function Home() {
   const [listings, setListings] = useState([]);
@@ -23,7 +24,9 @@ export default function Home() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-10">
-        <header className="mb-10">
+        <UserNotifications />
+
+        <header className="mb-10 mt-4">
           <h1 className="text-4xl font-black text-gray-900 mb-2">Pronađi mentora 🎓</h1>
           <p className="text-gray-500 text-lg">Pregledaj dostupne instrukcije i unaprijedi svoje znanje.</p>
         </header>
@@ -47,6 +50,7 @@ export default function Home() {
                 <img 
                   src={`https://ui-avatars.com/api/?name=${item.author?.name}&background=random`} 
                   className="w-8 h-8 rounded-full" 
+                  alt="Author Avatar"
                 />
                 <span className="text-sm font-semibold text-gray-700">{item.author?.name}</span>
               </div>
