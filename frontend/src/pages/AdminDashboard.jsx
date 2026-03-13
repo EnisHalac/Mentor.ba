@@ -7,8 +7,14 @@ export default function AdminDashboard() {
   const [requests, setRequests] = useState([]);
   const [listings, setListings] = useState([]); 
   const [stats, setStats] = useState({ users: 0, mentors: 0, pending: 0 });
-  const [selectedReq, setSelectedReq] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    mode: "reject",
+    request: null,
+    userName: ""
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -24,7 +30,6 @@ export default function AdminDashboard() {
       if (listRes.status === "fulfilled") setListings(listRes.value.data);
       
     } catch (err) {
-      console.error("Unexpected error in loadData:", err);
     } finally {
       setLoading(false);
     }
@@ -33,26 +38,59 @@ export default function AdminDashboard() {
   useEffect(() => { loadData(); }, []);
 
   const handleApprove = async (id) => {
-    if(!confirm("Approve mentor?")) return;
-    await apiClient.post(`/admin/approve/${id}`);
-    loadData();
+    if (!window.confirm("Are you sure you want to approve this mentor?")) return;
+    
+    try {
+      await apiClient.post(`/admin/approve/${id}`); 
+      alert("Mentor successfully approved!");
+      loadData();
+    } catch (err) {
+      alert(`Failed to approve: ${err.response?.data?.message || err.message || "Check backend errors"}`);
+    }
   };
 
   const handleReject = async (reason) => {
-    await apiClient.post(`/admin/reject/${selectedReq.id}`, { reason });
-    setSelectedReq(null);
-    loadData();
+    if (!modalConfig.request) return;
+    
+    try {
+      await apiClient.post(`/admin/reject/${modalConfig.request.id}`, { reason });
+      setModalConfig({ ...modalConfig, isOpen: false });
+      loadData();
+    } catch (err) {
+      alert("Failed to reject the request.");
+    }
   };
 
   const handleDeleteListing = async (id) => {
-    if(!confirm("Are you sure you want to delete this listing?")) return;
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
     try {
       await apiClient.delete(`/admin/listings/${id}`);
       loadData(); 
     } catch (err) {
-      console.error("Error deleting listing:", err);
-      alert("Error deleting listing. Please try again.");
+      alert("Failed to delete the listing.");
     }
+  };
+
+  const openDetails = (req) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "details",
+      request: req,
+      userName: req.user?.name || "Nepoznat"
+    });
+  };
+
+  const openReject = (req) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "reject",
+      request: req,
+      userName: req.user?.name || "Nepoznat"
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ ...modalConfig, isOpen: false });
   };
 
   if (loading) {
@@ -105,8 +143,9 @@ export default function AdminDashboard() {
                       </td>
                       <td className="p-6 font-medium text-gray-600">{req.subject}</td>
                       <td className="p-6 flex justify-center gap-3">
+                        <button onClick={() => openDetails(req)} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-xs font-black hover:bg-gray-200 transition">DETALJI</button>
                         <button onClick={() => handleApprove(req.id)} className="bg-green-100 text-green-700 px-4 py-2 rounded-xl text-xs font-black hover:bg-green-200 transition">ODOBRI</button>
-                        <button onClick={() => setSelectedReq({id: req.id, name: req.user?.name})} className="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-xs font-black hover:bg-red-200 transition">ODBIJ</button>
+                        <button onClick={() => openReject(req)} className="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-xs font-black hover:bg-red-200 transition">ODBIJ</button>
                       </td>
                     </tr>
                   ))
@@ -162,9 +201,11 @@ export default function AdminDashboard() {
       </div>
 
       <RejectModal 
-        isOpen={!!selectedReq} 
-        userName={selectedReq?.name} 
-        onClose={() => setSelectedReq(null)} 
+        isOpen={modalConfig.isOpen} 
+        mode={modalConfig.mode}
+        request={modalConfig.request}
+        userName={modalConfig.userName} 
+        onClose={closeModal} 
         onConfirm={handleReject} 
       />
     </div>

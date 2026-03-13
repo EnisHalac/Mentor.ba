@@ -16,7 +16,7 @@ export const processApproval = async (requestId) => {
   if (!request) throw new Error("Request not found.");
 
   return await prisma.$transaction([
-    prisma.user.update({ where: { id: request.userId }, data: { roleId: 5 } }),
+    prisma.user.update({ where: { id: request.userId }, data: { roleId: 8 } }),
     prisma.mentorRequest.update({ where: { id: parseInt(requestId) }, data: { status: "APPROVED" } }),
     prisma.notification.create({
       data: { userId: request.userId, message: "Congratulations! Your mentorship request has been APPROVED.", type: "SUCCESS" }
