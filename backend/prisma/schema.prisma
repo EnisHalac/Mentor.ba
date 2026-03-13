@@ -49,8 +49,6 @@ model Listing {
   description String
   price       Float
   category    String
-  
-  // Ko je objavio oglas
   authorId    Int
   author      User     @relation(fields: [authorId], references: [id])
 
