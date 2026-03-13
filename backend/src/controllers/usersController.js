@@ -31,12 +31,20 @@ export async function postUser(req, res) {
   }
 }
 
+
 export async function putUser(req, res) {
   try {
-    const updatedUser = await updateUser(req.user.id, req.body);
+
+    const updatedUser = await updateUser(req.user.id, req.body, req.file);
     return res.json({ ok: true, user: updatedUser });
   } catch (err) {
     console.error(err);
+    if (err.message === "INVALID_OLD_PASSWORD") {
+      return res.status(400).json({ ok: false, message: "Invalid old password" });
+    }
+    if (err.message === "IMAGE_UPLOAD_FAILED") {
+      return res.status(500).json({ ok: false, message: "Image upload failed" });
+    }
     return res.status(500).json({ ok: false, message: "Error occurred while updating profile" });
   }
 }
