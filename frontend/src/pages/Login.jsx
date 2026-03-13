@@ -17,16 +17,23 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await apiClient.post("/auth/login", formData);
+      
       if (response.data.ok) {
-        login(response.data.user);
-        navigate("/");
+        login(response.data.user, response.data.token);
+        const role = response.data.user.role; 
+        
+        if (role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Wrong email or password.");
+      setError(err.response?.data?.message || "Invalid email or password.");
     }
   };
 
@@ -72,7 +79,7 @@ export default function Login() {
             </div>
           </div>
           <div className="text-center border-t border-[#dddfe2] pt-6 mt-6 text-sm">
-            Nemaš nalog? <Link to="/register" className="text-[#1877f2] font-semibold hover:underline">Registruj se</Link>
+            Nemaš nalog? <Link to="/Register" className="text-[#1877f2] font-semibold hover:underline">Registruj se</Link>
           </div>
         </div>
       </div>

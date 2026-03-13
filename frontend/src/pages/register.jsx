@@ -21,8 +21,8 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!isValidEmail(formData.email)) return setError("Invalid email format.");
-    if (!isValidPassword(formData.password)) return setError("Password must be at least 6 characters long.");
+    if (!isValidEmail(formData.email)) return setError("Email must be valid (must contain @).");
+    if (!isValidPassword(formData.password)) return setError("Password must have at least 6 characters.");
 
     setLoading(true);
     try {

@@ -17,11 +17,6 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User with this email already exists." });
     }
 
-    const userRole = await prisma.role.findUnique({ where: { name: "USER" } });
-    if (!userRole) {
-      return res.status(500).json({ message: "System error: Roles are not seeded in the database." });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -30,7 +25,7 @@ export const registerUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        roleId: userRole.id, 
+        role: { connect: { name: "USER" } } 
       },
       include: { role: true }, 
     });
@@ -41,8 +36,8 @@ export const registerUser = async (req, res) => {
       token: generateToken(user.id),
     });
   } catch (error) {
-    console.error("System error during registration:", error);
-    res.status(500).json({ message: "System error." });
+    console.error("Error during registration:", error);
+    res.status(500).json({ message: "Error on server." });
   }
 };
 
@@ -58,14 +53,14 @@ export const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         ok: true,
-        user: { id: user.id, name: user.name, email: user.email, role: user.role.name },
+        user: { id: user.id, name: user.name, email: user.email, role: user.role.name ,avatar: user.avatar},
         token: generateToken(user.id),
       });
     } else {
       res.status(401).json({ message: "Invalid email or password." });
     }
   } catch (error) {
-    console.error("System error during login:", error);
-    res.status(500).json({ message: "System error." });
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Error on server." });
   }
 };
