@@ -1,31 +1,71 @@
-import bcrypt from "bcrypt";
-import { prisma } from "../prisma.js";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export async function loginUser(req, res) {
+const prisma = new PrismaClient();
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+};
+
+export const registerUser = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  try {
+    const userExists = await prisma.user.findUnique({ where: { email } });
+    if (userExists) {
+      return res.status(400).json({ message: "User with this email already exists." });
+    }
+
+    const userRole = await prisma.role.findUnique({ where: { name: "USER" } });
+    if (!userRole) {
+      return res.status(500).json({ message: "System error: Roles are not seeded in the database." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        roleId: userRole.id, 
+      },
+      include: { role: true }, 
+    });
+
+    res.status(201).json({
+      ok: true,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role.name },
+      token: generateToken(user.id),
+    });
+  } catch (error) {
+    console.error("System error during registration:", error);
+    res.status(500).json({ message: "System error." });
+  }
+};
+
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user) {
-      return res.status(401).json({ ok: false, message: "Pogrešan email ili lozinka" });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ ok: false, message: "Pogrešan email ili lozinka" });
-    }
-
-    const { password: _, ...userWithoutPassword } = user;
-
-    return res.json({ 
-      ok: true, 
-      user: userWithoutPassword,
-      message: "Uspješna prijava!" 
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { role: true }, 
     });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ ok: false, message: "Server error" });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      res.json({
+        ok: true,
+        user: { id: user.id, name: user.name, email: user.email, role: user.role.name },
+        token: generateToken(user.id),
+      });
+    } else {
+      res.status(401).json({ message: "Invalid email or password." });
+    }
+  } catch (error) {
+    console.error("System error during login:", error);
+    res.status(500).json({ message: "System error." });
   }
-}
+};
