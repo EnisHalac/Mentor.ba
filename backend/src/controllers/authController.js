@@ -17,11 +17,6 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User with this email already exists." });
     }
 
-    const userRole = await prisma.role.findUnique({ where: { name: "USER" } });
-    if (!userRole) {
-      return res.status(500).json({ message: "System error: Roles are not seeded in the database." });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -30,7 +25,7 @@ export const registerUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        roleId: 4, 
+        role: { connect: { name: "USER" } } 
       },
       include: { role: true }, 
     });

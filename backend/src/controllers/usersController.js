@@ -1,5 +1,5 @@
 import { isValidEmail, isValidPassword } from "../utils/validators.js";
-import { createUser, listUsers, updateUser } from "../services/usersServices.js";
+import { createUser, listUsers , updateUser} from "../services/usersServices.js";
 
 export async function getUsers(req, res) {
   const users = await listUsers();
@@ -10,13 +10,13 @@ export async function postUser(req, res) {
   const { email, password, name } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ ok: false, message: "email i password su obavezni" });
+    return res.status(400).json({ ok: false, message: "Email and password are required" });
   }
   if (!isValidEmail(email)) {
-    return res.status(400).json({ ok: false, message: "email mora biti validan (mora sadrzavati @)" });
+    return res.status(400).json({ ok: false, message: "Email is not valid" });
   }
   if (!isValidPassword(password)) {
-    return res.status(400).json({ ok: false, message: "password mora imati min 6 karaktera" });
+    return res.status(400).json({ ok: false, message: "Password must have at least 6 characters" });
   }
 
   try {
@@ -24,13 +24,12 @@ export async function postUser(req, res) {
     return res.status(201).json({ ok: true, user });
   } catch (err) {
     if (err.message === "EMAIL_EXISTS") {
-      return res.status(409).json({ ok: false, message: "email je vec registrovan" });
+      return res.status(409).json({ ok: false, message: "Email is already registered" });
     }
     console.error(err);
     return res.status(500).json({ ok: false, message: "server error" });
   }
 }
-
 
 export async function putUser(req, res) {
   try {
@@ -38,6 +37,6 @@ export async function putUser(req, res) {
     return res.json({ ok: true, user: updatedUser });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ ok: false, message: "Greška pri ažuriranju profila" });
+    return res.status(500).json({ ok: false, message: "Error occurred while updating profile" });
   }
 }
