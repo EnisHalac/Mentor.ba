@@ -26,7 +26,7 @@ export default function Login() {
         navigate("/");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Pogrešan email ili lozinka");
+      setError(err.response?.data?.message || "Wrong email or password.");
     }
   };
 
