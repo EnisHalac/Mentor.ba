@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma.js";
 
 export const protect = async (req, res, next) => {
   let token;
@@ -17,21 +15,21 @@ export const protect = async (req, res, next) => {
         include: { role: true } 
       });
 
-      next();
+      return next();
     } catch (error) {
-      res.status(401).json({ message: "Niste autorizovani, token nije ispravan" });
+      return res.status(401).json({ ok: false, message: "Invalid token" });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: "Niste autorizovani, nema tokena" });
+    return res.status(401).json({ ok: false, message: "Invalid token" });
   }
 };
 
 export const isAdmin = (req, res, next) => {
-  if (req.user && req.user.role.name === "ADMIN") {
-    next();
+  if (req.user && req.user.role?.name === "ADMIN") {
+    return next();
   } else {
-    res.status(403).json({ message: "Pristup odbijen. Samo za administratore." });
+    return res.status(403).json({ ok: false, message: "Access denied. Only for administrators." });
   }
 };
