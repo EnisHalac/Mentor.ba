@@ -33,7 +33,7 @@ export const deleteListingById = async (id, userId, userRole) => {
   if (!listing) throw new Error("Listing not found.");
 
   if (listing.authorId !== userId && userRole !== "ADMIN") {
-    throw new Error("You are not the owner of this listing.");
+    throw new Error("You do not have permission to delete this listing.");
   }
 
   return await prisma.listing.delete({ where: { id: parseInt(id) } });

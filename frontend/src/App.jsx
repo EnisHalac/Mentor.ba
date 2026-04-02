@@ -3,6 +3,8 @@ import { useAuth } from "./context/AuthContext";
 import Register from "./pages/Register";
 import Login from "./pages/Login"; 
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const { user, loading } = useAuth();
@@ -12,9 +14,16 @@ function App() {
   return (
     <Router>
       <Routes>
-        
-        <Route path="/" element={user ? <Home /> : <Navigate to="/Login" />} />
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+
+        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+        
+        <Route 
+          path="/admin" 
+          element={user?.role === "ADMIN" ? <AdminDashboard /> : <Navigate to="/" />} 
+        />
       </Routes>
     </Router>
   );

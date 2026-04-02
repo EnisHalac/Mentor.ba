@@ -27,9 +27,12 @@ model User {
   password  String
   roleId    Int
   role      Role     @relation(fields: [roleId], references: [id])
+  avatar         String?
+  portfolioUrl   String?
   mentorProfile MentorProfile?
+  mentorRequest  MentorRequest?
+  notifications  Notification[]
   listings      Listing[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,4 +57,29 @@ model Listing {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model MentorRequest {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  user          User     @relation(fields: [userId], references: [id])
+  subject       String
+  experience    String
+  education     String? 
+  linkedinUrl   String?  
+  githubUrl     String?
+  proofFiles    String[] @default([])
+  status        String   @default("PENDING") 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
