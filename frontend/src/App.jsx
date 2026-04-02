@@ -9,7 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 function App() {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="flex h-screen items-center justify-center">Učitavanje...</div>;
+  if (loading) return <div className="flex h-screen items-center justify-center text-2xl font-bold">Učitavanje...</div>;
 
   return (
     <Router>
