@@ -71,3 +71,13 @@ export const getListingEnrollments = async (req, res) => {
     return res.status(403).json({ ok: false, message: error.message });
   }
 };
+
+export const createReview = async (req, res) => {
+  try {
+    const { enrollmentId, rating, comment } = req.body;
+    const review = await createReviewService(req.user.id, enrollmentId, rating, comment);
+    res.status(201).json({ ok: true, review });
+  } catch (error) {
+    res.status(400).json({ ok: false, message: error.message });
+  }
+};

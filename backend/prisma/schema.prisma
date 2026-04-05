@@ -25,6 +25,7 @@ model User {
   name      String
   email     String   @unique
   password  String
+  xp        Int?
   roleId    Int
   role      Role     @relation(fields: [roleId], references: [id])
   avatar         String?
@@ -34,6 +35,8 @@ model User {
   notifications  Notification[]
   listings      Listing[]
   enrollments  Enrollment[]
+  reviewsGiven  Review[]       @relation("ReviewsFromStudent")
+  reviewsReceived Review[]     @relation("ReviewsToMentor")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -92,7 +95,21 @@ model Enrollment {
   status    String   @default("ACTIVE")
   user      User     @relation(fields: [userId], references: [id])
   listing   Listing  @relation(fields: [listingId], references: [id])
+  review    Review?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([userId, listingId])
+}
+
+model Review {
+  id           Int        @id @default(autoincrement())
+  rating       Int        
+  comment      String?
+  studentId    Int
+  mentorId     Int
+  enrollmentId Int        @unique
+  student      User       @relation("ReviewsFromStudent", fields: [studentId], references: [id])
+  mentor       User       @relation("ReviewsToMentor", fields: [mentorId], references: [id])
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+  createdAt    DateTime   @default(now())
 }

@@ -41,7 +41,7 @@ export const registerUser = async (req, res) => {
 
     return res.status(201).json({
       ok: true,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role.name },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role.name, xp: user.xp },
       token: generateToken(user.id),
     });
   } catch (error) {
@@ -69,7 +69,7 @@ export const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       return res.json({
         ok: true,
-        user: { id: user.id, name: user.name, email: user.email, role: user.role.name ,avatar: user.avatar},
+        user: { id: user.id, name: user.name, email: user.email, role: user.role.name ,avatar: user.avatar,xp: user.xp},
         token: generateToken(user.id),
       });
     } else {
