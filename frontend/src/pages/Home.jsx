@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
 import Navbar from "../components/Navbar";
 import UserNotifications from "../components/UserNotifications";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [listings, setListings] = useState([]);
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const getListings = async () => {
       try {
@@ -35,7 +36,9 @@ export default function Home() {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {listings.map((item) => (
-            <div key={item.id} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div key={item.id} 
+            onClick={() => navigate(`/listings/${item.id}`)}
+            className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
                 <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                   {item.category || "General"}

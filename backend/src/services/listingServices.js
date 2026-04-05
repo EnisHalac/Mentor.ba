@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
+import { prisma } from "../prisma.js";
 export const createNewListing = async (listingData, authorId) => {
   return await prisma.listing.create({
     data: {
@@ -37,4 +35,14 @@ export const deleteListingById = async (id, userId, userRole) => {
   }
 
   return await prisma.listing.delete({ where: { id: parseInt(id) } });
+};
+export const getListingByIdService = async (id) => {
+  return await prisma.listing.findUnique({
+    where: { id },
+    include: {
+      author: {
+        select: { name: true, avatar: true }
+      }
+    }
+  });
 };

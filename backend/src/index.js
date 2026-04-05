@@ -7,6 +7,7 @@ import authRouter from "./routes/authRoutes.js";
 import listingsRouter from "./routes/listingsRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import mentorRequestRouter from "./routes/mentorRequests.js";
+import enrollmentRouter from "./routes/enrollmentRoutes.js";
 
 dotenv.config();
 
@@ -33,3 +34,5 @@ app.use("/api/listings", listingsRouter);
 app.use("/api/admin", adminRouter);
 
 app.use("/api/mentor-requests", mentorRequestRouter);
+
+app.use("/api/enrollments", enrollmentRouter);

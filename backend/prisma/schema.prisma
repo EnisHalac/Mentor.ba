@@ -33,6 +33,7 @@ model User {
   mentorRequest  MentorRequest?
   notifications  Notification[]
   listings      Listing[]
+  enrollments  Enrollment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,7 +55,7 @@ model Listing {
   category    String
   authorId    Int
   author      User     @relation(fields: [authorId], references: [id])
-
+  enrollments  Enrollment[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -82,4 +83,16 @@ model Notification {
   type      String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  listingId Int
+  status    String   @default("ACTIVE")
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, listingId])
 }

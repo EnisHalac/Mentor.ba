@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
+import ManageListing from "./pages/ManageListing";
+import ListingDetails from "./pages/ListigDetails";
 
 function App() {
   const { user, loading } = useAuth();
@@ -24,6 +26,8 @@ function App() {
           path="/admin" 
           element={user?.role === "ADMIN" ? <AdminDashboard /> : <Navigate to="/" />} 
         />
+        <Route path="/listings/:id" element={<ListingDetails />} />
+        <Route path="/manage-listing/:id" element={<ManageListing />} />
       </Routes>
     </Router>
   );
