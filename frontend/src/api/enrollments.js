@@ -24,3 +24,8 @@ export const approveEnrollment = async (listingId, studentId) => {
   const response = await apiClient.patch(`/enrollments/approve/${listingId}/${studentId}`);
   return response.data;
 };
+
+export const completeEnrollment = async (listingId, studentId) => {
+  const response = await apiClient.patch(`/enrollments/complete/${listingId}/${studentId}`);
+  return response.data;
+};

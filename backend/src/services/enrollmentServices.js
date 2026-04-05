@@ -1,6 +1,5 @@
 import { prisma } from "../prisma.js";
 
-
 export const toggleEnrollmentService = async (userId, listingId) => {
   const listing = await prisma.listing.findUnique({ where: { id: listingId } });
   
@@ -20,19 +19,14 @@ export const toggleEnrollmentService = async (userId, listingId) => {
   }
 
   return await prisma.enrollment.create({
-    data: {
-      userId,
-      listingId,
-      status: "PENDING"
-    }
+    data: { userId, listingId, status: "PENDING" }
   });
 };
 
 export const getMyEnrollmentsService = async (userId) => {
   return await prisma.enrollment.findMany({
     where: { 
-      userId: userId,
-      status: "ACTIVE" 
+      userId: userId
     },
     include: {
       listing: {
@@ -48,37 +42,34 @@ export const getAuthorListingsWithStatsService = async (authorId) => {
     where: { authorId: authorId },
     include: {
       _count: {
-        select: { 
-          enrollments: { where: { status: "ACTIVE" } } 
-        }
+        select: { enrollments: { where: { status: "ACTIVE" } } }
       },
-        enrollments: {
-            where: { status: "COMPLETED" },
-            select: {id: true}
-        }
+      enrollments: {
+        where: { status: "COMPLETED" },
+        select: { id: true }
+      }
     },
     orderBy: { createdAt: 'desc' }
   });
 };
 
-export const completeEnrollmentService = async (userId, listingId) => {
-    const listingIdNum = Number(listingId);
+export const completeEnrollmentService = async (mentorId, studentId, listingId) => {
+  const listing = await prisma.listing.findUnique({ where: { id: listingId } });
 
-    const enrollment = await prisma.enrollment.findUnique({
-        where: { userId_listingId: { userId, listingId: listingIdNum } }
-    });
+  if (!listing) throw new Error("Oglas nije pronađen.");
+  if (listing.authorId !== mentorId) throw new Error("Nemate dozvolu za ovu akciju.");
 
-    if (!enrollment || enrollment.status !== "ACTIVE") {
-        throw { status: 404, message: "Active enrollment not found." };
-    }
-    return await prisma.enrollment.update({
-        where: { id: enrollment.id },
-        data: { status: "COMPLETED" }
-    });
-}
+  return await prisma.enrollment.update({
+    where: { 
+      userId_listingId: { userId: studentId, listingId } 
+    },
+    data: { status: "COMPLETED" }
+  });
+};
 
 export const approveEnrollmentService = async (mentorId, listingId, studentId) => {
   const listing = await prisma.listing.findUnique({ where: { id: listingId } });
+  
   if (!listing || listing.authorId !== mentorId) {
     throw new Error("You do not have permission to approve enrollments for this listing.");
   }

@@ -9,6 +9,6 @@ router.get("/author-stats", protect, getAuthorListingsWithStats);
 router.get("/listing/:listingId", protect, getListingEnrollments);
 router.post("/toggle/:listingId", protect, toggleEnrollment);
 router.patch("/approve/:listingId/:studentId", protect, approveEnrollment);
-router.patch("/complete/:listingId", protect, completeEnrollment);
+router.patch("/complete/:listingId/:studentId", protect, completeEnrollment);
 
 export default router;
