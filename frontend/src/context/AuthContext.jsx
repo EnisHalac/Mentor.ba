@@ -4,6 +4,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUserState] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const setUser = (newUser) => {
@@ -12,6 +13,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(newUser));
     } else {
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      setToken(null);
     }
   };
 
@@ -19,14 +22,16 @@ export const AuthProvider = ({ children }) => {
     const checkUser = () => {
       try {
         const savedUser = localStorage.getItem("user");
-        const token = localStorage.getItem("token");
+        const savedToken = localStorage.getItem("token");
         
-        if (savedUser && token) {
-          setUser(JSON.parse(savedUser));
+        if (savedUser && savedToken) {
+          setUserState(JSON.parse(savedUser));
+          setToken(savedToken);
         }
       } catch (error) {
-        console.error("Error reading user", error);
+        console.error("Error reading auth data", error);
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
       } finally {
         setLoading(false);
       }
@@ -34,23 +39,25 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  const login = (userData, token) => {
-    setUser(userData);
+  const login = (userData, userToken) => {
+    setUserState(userData);
+    setToken(userToken);
     localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", token); 
+    localStorage.setItem("token", userToken); 
   };
 
   const logout = () => {
-    setUser(null);
+    setUserState(null);
+    setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     window.location.href = "/login"; 
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, setUser, login, logout, loading }}>
       {!loading ? children : (
-        <div className="flex h-screen items-center justify-center text-xl font-bold text-gray-600">Učitavanje...</div>
+        <div className="flex h-screen items-center justify-center text-xl font-bold text-gray-600">Loading...</div>
       )}
     </AuthContext.Provider>
   );
