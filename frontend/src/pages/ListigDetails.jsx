@@ -8,7 +8,7 @@ import Navbar from "../components/Navbar";
 export default function ListingDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   
   const [listing, setListing] = useState(null);
   const [enrollmentStatus, setEnrollmentStatus] = useState(null);
@@ -52,9 +52,24 @@ export default function ListingDetails() {
     }
   };
 
-  const handleContactMentor = () => {
-    navigate(`/chat/${listing.authorId}`);
-  };
+  const handleContactMentor = async () => {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/start`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ targetUserId: listing.authorId })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      navigate("/messages", { state: { activeChatId: data.conversation.id } });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   if (loading) return <div className="min-h-screen pt-20 text-center">Učitavanje...</div>;
   if (!listing) return <div className="min-h-screen pt-20 text-center">Oglas nije pronađen.</div>;

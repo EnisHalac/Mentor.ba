@@ -37,6 +37,9 @@ model User {
   enrollments  Enrollment[]
   reviewsGiven  Review[]       @relation("ReviewsFromStudent")
   reviewsReceived Review[]     @relation("ReviewsToMentor")
+  conversationsAsUser1 Conversation[] @relation("User1Conversations")
+  conversationsAsUser2 Conversation[] @relation("User2Conversations")
+  sentMessages         Message[]      @relation("SentMessages")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -112,4 +115,27 @@ model Review {
   mentor       User       @relation("ReviewsToMentor", fields: [mentorId], references: [id])
   enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
   createdAt    DateTime   @default(now())
+}
+
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  user1Id   Int
+  user2Id   Int
+  user1     User      @relation("User1Conversations", fields: [user1Id], references: [id])
+  user2     User      @relation("User2Conversations", fields: [user2Id], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  conversationId Int
+  senderId       Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
 }

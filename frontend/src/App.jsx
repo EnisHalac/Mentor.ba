@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageListing from "./pages/ManageListing";
 import ListingDetails from "./pages/ListigDetails";
+import Messages from "./pages/Messages";
 
 function App() {
   const { user, loading } = useAuth();
@@ -18,16 +19,13 @@ function App() {
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
         <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-
-        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? (user.role === "ADMIN" ? <Navigate to ="/admin"/> : <Home />) : <Navigate to="/login" />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-        
-        <Route 
-          path="/admin" 
-          element={user?.role === "ADMIN" ? <AdminDashboard /> : <Navigate to="/" />} 
-        />
+        <Route path="/messages" element={user ? <Messages /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={user?.role === "ADMIN" ? <AdminDashboard /> : <Navigate to="/" />}/>
         <Route path="/listings/:id" element={<ListingDetails />} />
         <Route path="/manage-listing/:id" element={<ManageListing />} />
+
       </Routes>
     </Router>
   );
