@@ -4,7 +4,10 @@ import {
   getAuthorListingsWithStatsService,
   completeEnrollmentService,
   approveEnrollmentService,
-  getListingEnrollmentsService
+  getListingEnrollmentsService,
+  createReviewService,
+  getMentorReviewsService,
+  rejectEnrollmentService
 } from "../services/enrollmentServices.js";
 
 export const toggleEnrollment = async (req, res) => {
@@ -13,8 +16,7 @@ export const toggleEnrollment = async (req, res) => {
     const result = await toggleEnrollmentService(req.user.id, listingId);
     return res.status(200).json({ ok: true, message: "Status successfully updated.", enrollment: result });
   } catch (error) {
-    const status = error.status || 500;
-    return res.status(status).json({ ok: false, message: error.message || "Server error." });
+    return res.status(400).json({ ok: false, message: error.message });
   }
 };
 
@@ -43,10 +45,9 @@ export const completeEnrollment = async (req, res) => {
     const studentId = Number(req.params.studentId);
 
     const updated = await completeEnrollmentService(mentorId, studentId, listingId);
-    return res.status(200).json({ ok: true, message: "Instrukcije označene kao završene.", enrollment: updated });
+    return res.status(200).json({ ok: true, message: "Session marked as completed.", enrollment: updated });
   } catch (error) {
-    const status = error.message.includes("dozvolu") ? 403 : 400;
-    return res.status(status).json({ ok: false, message: error.message });
+    return res.status(400).json({ ok: false, message: error.message });
   }
 };
 
@@ -57,7 +58,19 @@ export const approveEnrollment = async (req, res) => {
     const studentId = Number(req.params.studentId);
 
     const enrollment = await approveEnrollmentService(mentorId, listingId, studentId);
-    return res.status(200).json({ ok: true, message: "Prijava uspješno odobrena.", enrollment });
+    return res.status(200).json({ ok: true, message: "Enrollment successfully approved.", enrollment });
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message });
+  }
+};
+
+export const rejectEnrollment = async (req, res) => {
+  try {
+    const mentorId = req.user.id;
+    const listingId = Number(req.params.listingId);
+    const studentId = Number(req.params.studentId);
+    await rejectEnrollmentService(mentorId, listingId, studentId);
+    return res.status(200).json({ ok: true, message: "Rejected." });
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message });
   }
@@ -76,8 +89,17 @@ export const createReview = async (req, res) => {
   try {
     const { enrollmentId, rating, comment } = req.body;
     const review = await createReviewService(req.user.id, enrollmentId, rating, comment);
-    res.status(201).json({ ok: true, review });
+    res.status(201).json({ ok: true, message: "Review created successfully.", review });
   } catch (error) {
     res.status(400).json({ ok: false, message: error.message });
+  }
+};
+
+export const getMentorReviews = async (req, res) => {
+  try {
+    const reviews = await getMentorReviewsService(req.user.id);
+    return res.status(200).json({ ok: true, reviews });
+  } catch (error) {
+    return res.status(500).json({ ok: false, message: "Server error." });
   }
 };

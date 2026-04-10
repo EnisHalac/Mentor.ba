@@ -25,7 +25,21 @@ export const approveEnrollment = async (listingId, studentId) => {
   return response.data;
 };
 
+export const rejectEnrollment = async (listingId, studentId) => {
+  const res = await apiClient.delete(`/enrollments/reject/${listingId}/${studentId}`);
+  return res.data;
+};
+
 export const completeEnrollment = async (listingId, studentId) => {
   const response = await apiClient.patch(`/enrollments/complete/${listingId}/${studentId}`);
+  return response.data;
+};
+
+export const createReview = async (reviewData) => {
+  return await apiClient.post("/enrollments/review", reviewData);
+};
+
+export const getMentorReviews = async () => {
+  const response = await apiClient.get("/enrollments/reviews/mentor");
   return response.data;
 };
