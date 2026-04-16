@@ -18,6 +18,7 @@ export const fetchAllListings = async (filters = {}) => {
           name: true,
           email: true,
           mentorProfile: true,
+          avatar: true,
         },
       },
     },
@@ -38,11 +39,27 @@ export const deleteListingById = async (id, userId, userRole) => {
 };
 export const getListingByIdService = async (id) => {
   return await prisma.listing.findUnique({
-    where: { id },
+    where: { 
+      id: id 
+    },
     include: {
       author: {
-        select: { name: true, avatar: true }
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+          portfolioUrl: true,
+          reviewsReceived: { 
+            include: {
+              student: {
+                select: { name: true }
+              }
+            },
+            orderBy: { createdAt: 'desc' }
+          }
+        }
       }
     }
   });
 };
+

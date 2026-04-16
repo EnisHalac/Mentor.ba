@@ -44,6 +44,19 @@ export default function Profile() {
   const activeEnrollments = myEnrollments.filter(en => en.status !== "COMPLETED");
   const completedEnrollments = myEnrollments.filter(en => en.status === "COMPLETED");
 
+  const renderModeBadge = (mode, location) => {
+    if (mode === "ONLINE") {
+      return <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-bold">Online</span>;
+    }
+    if (mode === "ONSITE") {
+      return <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full font-bold">Uživo {location && `(${location})`}</span>;
+    }
+    if (mode === "HYBRID") {
+      return <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-bold">Hybrid {location && `(${location})`}</span>;
+    }
+    return null;
+  };
+
   if (loading) return <div className="text-center pt-20">Učitavanje...</div>;
 
   return (
@@ -117,12 +130,15 @@ export default function Profile() {
                     myListings.map((listing) => (
                       <div key={listing.id} className="flex justify-between items-center p-4 border rounded-xl hover:bg-gray-50 transition">
                         <div>
-                          <h4 className="font-bold">{listing.title}</h4>
-                          <p className="text-sm text-gray-500">{listing._count.enrollments} aktivnih studenata</p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-bold text-gray-800">{listing.title}</h4>
+                            {renderModeBadge(listing.mode, listing.location)}
+                          </div>
+                          <p className="text-sm text-gray-500">{listing._count?.enrollments || 0} aktivnih studenata</p>
                         </div>
                         <button 
                           onClick={() => navigate(`/manage-listing/${listing.id}`)}
-                          className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-bold"
+                          className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-bold ml-4"
                         >
                           Upravljaj
                         </button>
@@ -142,10 +158,13 @@ export default function Profile() {
                   {activeEnrollments.map((en) => (
                     <div key={en.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
                       <div>
-                        <h4 className="font-bold text-gray-800">{en.listing.title}</h4>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-bold text-gray-800">{en.listing.title}</h4>
+                          {renderModeBadge(en.listing.mode, en.listing.location)}
+                        </div>
                         <p className="text-sm text-gray-500">Mentor: {en.listing.author.name}</p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${en.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ml-4 ${en.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {en.status === 'ACTIVE' ? 'Aktivno' : 'Na čekanju'}
                       </span>
                     </div>
@@ -161,10 +180,13 @@ export default function Profile() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {completedEnrollments.map((en) => (
-                    <div key={en.id} className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center gap-3">
-                      <div>
+                    <div key={en.id} className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col justify-center">
+                      <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-bold text-indigo-900 leading-tight">{en.listing.title}</h4>
-                        <p className="text-xs text-indigo-500">Završeno</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-xs text-indigo-500 font-medium">Završeno</p>
+                        {renderModeBadge(en.listing.mode, en.listing.location)}
                       </div>
                     </div>
                   ))}

@@ -60,7 +60,7 @@ export default function MentorWizard({ onClose }) {
 
         {step === 3 && (
           <div className="space-y-4">
-            <label className="block text-sm font-bold text-gray-500">Uploadaj dokaze (Sertifikati, Diplome)</label>
+            <label className="block text-sm font-bold text-gray-500">Uploadaj dokaze (Certifikati, Diplome)</label>
             <input type="file" multiple onChange={e => setFiles(e.target.files)} className="w-full p-3 bg-gray-50 rounded-xl" />
             <p className="text-xs text-gray-400">Možeš odabrati više fajlova odjednom.</p>
           </div>

@@ -30,12 +30,20 @@ export const deleteListing = async (req, res) => {
 export const getListingById = async (req, res) => {
   try {
     const listingId = Number(req.params.id);
-    const listing = await listingService.fetchAllListings({ id: listingId });
 
-    if (!listing) return res.status(404).json({ message: "Listing not found." });
+    if (isNaN(listingId)) {
+      return res.status(400).json({ message: "Invalid listing ID." });
+    }
+    const listing = await listingService.getListingByIdService(listingId);
+    
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found." });
+    }
 
-    res.json(listing[0]);
-  }catch (error) {
+    res.json(listing);
+
+  } catch (error) {
+    console.error("Error fetching listing:", error);
     res.status(500).json({ message: "Server error." });
   }
 };
