@@ -47,7 +47,7 @@ export default function ListingDetails() {
         });
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Server error.");
+      alert(err.response?.data?.message || "Error on server.");
       console.error("Toggle error:", err);
     }
   };
@@ -136,7 +136,7 @@ export default function ListingDetails() {
                   className="mt-6 flex items-center gap-2 text-sm text-indigo-600 font-semibold hover:text-indigo-800 bg-indigo-50 px-4 py-2 rounded-xl transition w-full justify-center"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                  Posjeti Portfolio
+                  Portfolio
                 </a>
               )}
 
@@ -155,9 +155,9 @@ export default function ListingDetails() {
                         : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200"
                     }`}
                   >
-                    {enrollmentStatus === "COMPLETED" ? "✓ Nastava Završena" 
-                      : enrollmentStatus === "ACTIVE" ? "✖ Otkaži Instrukcije" 
-                      : enrollmentStatus === "PENDING" ? "⏳ Na čekanju (Otkaži)" 
+                    {enrollmentStatus === "COMPLETED" ? "Nastava završena" 
+                      : enrollmentStatus === "ACTIVE" ? "Otkaži instrukcije" 
+                      : enrollmentStatus === "PENDING" ? "Na čekanju (Otkaži)" 
                       : "Prijavi se za instrukcije"}
                   </button>
 
@@ -204,35 +204,34 @@ export default function ListingDetails() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {reviews.slice(0, 3).map((review, idx) => (
-                    <div key={idx} className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${review.reviewer?.name || 'User'}&background=random`} 
-                            className="w-10 h-10 rounded-full" 
-                            alt="Reviewer"
-                          />
-                          <div>
-                            <p className="font-bold text-gray-800">{review.student?.name || "Anonimno"}</p>
-                            <div className="flex text-yellow-400 w-4 h-4 mt-0.5">
-                              {[...Array(5)].map((_, i) => (
-                                <svg key={i} className={i < review.rating ? "fill-current" : "text-gray-300 fill-current"} viewBox="0 0 20 20">
-                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                              ))}
+                  {reviews.map((review, idx) => {
+                    const reviewerAvatar = review.student?.avatar || `https://ui-avatars.com/api/?name=${review.student?.name || 'User'}&background=random`;
+                    return (
+                      <div key={idx} className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={reviewerAvatar} 
+                              className="w-10 h-10 rounded-full object-cover bg-white border border-gray-200" 
+                              alt="Student"
+                              onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${review.student?.name || 'User'}`; }}
+                            />
+                            <div>
+                              <p className="font-bold text-gray-800">{review.student?.name || "Student"}</p>
+                              <div className="flex text-yellow-400 mt-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <svg key={i} className={`w-4 h-4 ${i < review.rating ? "fill-current" : "text-gray-300 fill-current"}`} viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
+                        <p className="text-gray-600 italic">"{review.comment}"</p>
                       </div>
-                      <p className="text-gray-600 italic">"{review.comment}"</p>
-                    </div>
-                  ))}
-                  {reviews.length > 3 && (
-                    <button className="text-indigo-600 font-bold hover:underline w-full text-center mt-4">
-                      Prikaži sve recenzije ({reviews.length})
-                    </button>
-                  )}
+                    );
+                  })}
                 </div>
               )}
             </div>

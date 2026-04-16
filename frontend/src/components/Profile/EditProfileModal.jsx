@@ -3,7 +3,7 @@ import apiClient from "../../api/apiClient";
 
 export default function EditProfileModal({ user, onClose, onUpdate }) {
   const [formData, setFormData] = useState({ 
-    name: user.name, 
+    name: typeof user.name === 'object' ? user.name.name : user.name, 
     oldPassword: "", 
     newPassword: "" 
   });
@@ -31,7 +31,8 @@ export default function EditProfileModal({ user, onClose, onUpdate }) {
       onUpdate(res.data.user);
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "Error updating profile. Please try again.");
+      const msg = err.response?.data?.message;
+      setError(typeof msg === 'object' ? JSON.stringify(msg) : msg || "Error.");
     }
   };
 

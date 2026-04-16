@@ -25,10 +25,9 @@ export const toggleEnrollmentService = async (userId, listingId) => {
 
 export const getMyEnrollmentsService = async (userId) => {
   return await prisma.enrollment.findMany({
-    where: { 
-      userId: userId
-    },
+    where: { userId },
     include: {
+      review: true,
       listing: {
         include: { author: { select: { name: true, email: true, avatar: true } } }
       }
@@ -38,19 +37,28 @@ export const getMyEnrollmentsService = async (userId) => {
 };
 
 export const getAuthorListingsWithStatsService = async (authorId) => {
-  return await prisma.listing.findMany({
-    where: { authorId: authorId },
+  const listings = await prisma.listing.findMany({
+    where: { authorId },
     include: {
-      _count: {
-        select: { enrollments: { where: { status: "ACTIVE" } } }
+      author : {
+        select: {
+          name: true,
+          email: true,
+          avatar: true,
+        }
       },
       enrollments: {
-        where: { status: "COMPLETED" },
-        select: { id: true }
+        select: { status: true }
       }
     },
     orderBy: { createdAt: 'desc' }
   });
+
+  return listings.map(l => ({
+    ...l,
+    activeCount: l.enrollments.filter(e => e.status === "ACTIVE").length,
+    pendingCount: l.enrollments.filter(e => e.status === "PENDING").length
+  }));
 };
 
 export const completeEnrollmentService = async (mentorId, studentId, listingId) => {
@@ -75,6 +83,14 @@ export const completeEnrollmentService = async (mentorId, studentId, listingId) 
       data: { xp: { increment: 100 } }
     });
 
+    await tx.notification.create({
+      data: {
+        userId: studentId,
+        message: `The session for "${listing.title}" is completed. You can now leave a review for your mentor!`,
+        type: "SUCCESS"
+      }
+    });
+
     return updatedEnrollment;
   });
 };
@@ -92,11 +108,21 @@ export const approveEnrollmentService = async (mentorId, listingId, studentId) =
   });
 };
 
+export const rejectEnrollmentService = async (mentorId, listingId, studentId) => {
+  const listing = await prisma.listing.findUnique({ where: { id: listingId } });
+  if (!listing || listing.authorId !== mentorId) {
+    throw new Error("No permission.");
+  }
+  return await prisma.enrollment.delete({
+    where: { userId_listingId: { userId: studentId, listingId } }
+  });
+};
+
 export const getListingEnrollmentsService = async (mentorId, listingId) => {
   const listing = await prisma.listing.findUnique({ where: { id: listingId } });
   
   if (!listing || listing.authorId !== mentorId) {
-    throw new Error("Nemate pristup ovim podacima.");
+    throw new Error("Unauthorized access to this data.");
   }
 
   return await prisma.enrollment.findMany({
@@ -119,16 +145,34 @@ export const createReviewService = async (studentId, enrollmentId, rating, comme
   }
   
   if (enrollment.status !== "COMPLETED") {
-    throw new Error("You can only review completed courses.");
+    throw new Error("You can only review completed sessions.");
   }
 
   return await prisma.review.create({
     data: {
-      rating,
+      rating: Number(rating),
       comment,
       studentId,
       mentorId: enrollment.listing.authorId,
       enrollmentId
     }
+  });
+};
+
+export const getMentorReviewsService = async (mentorId) => {
+  return await prisma.review.findMany({
+    where: { 
+      mentorId: Number(mentorId)
+    },
+    include: {
+      student: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
   });
 };

@@ -51,9 +51,7 @@ export const getListingByIdService = async (id) => {
           portfolioUrl: true,
           reviewsReceived: { 
             include: {
-              student: {
-                select: { name: true }
-              }
+              student: true
             },
             orderBy: { createdAt: 'desc' }
           }
