@@ -99,7 +99,7 @@ model Enrollment {
   listingId Int
   status    String   @default("ACTIVE")
   user      User     @relation(fields: [userId], references: [id])
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id],onDelete: Cascade)
   review    Review?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
