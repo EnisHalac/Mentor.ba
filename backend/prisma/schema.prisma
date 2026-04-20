@@ -40,6 +40,9 @@ model User {
   conversationsAsUser1 Conversation[] @relation("User1Conversations")
   conversationsAsUser2 Conversation[] @relation("User2Conversations")
   sentMessages         Message[]      @relation("SentMessages")
+  createdTickets   Ticket[]        @relation("CreatedTickets")
+  assignedTickets  Ticket[]        @relation("AssignedTickets")
+  ticketMessages   TicketMessage[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -140,4 +143,42 @@ model Message {
   sender         User         @relation("SentMessages", fields: [senderId], references: [id])
   isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Ticket {
+  id          Int       @id @default(autoincrement())
+  subject     String    
+  description String    
+  status      TicketStatus @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  creatorId   Int
+  creator     User      @relation("CreatedTickets", fields: [creatorId], references: [id])
+  assigneeId  Int?
+  assignee    User?     @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  messages    TicketMessage[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TicketMessage {
+  id        Int      @id @default(autoincrement())
+  message   String
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId  Int
+  sender    User     @relation(fields: [senderId], references: [id])
+  createdAt DateTime @default(now())
 }
