@@ -9,6 +9,7 @@ import adminRouter from "./routes/adminRoutes.js";
 import mentorRequestRouter from "./routes/mentorRequests.js";
 import enrollmentRouter from "./routes/enrollmentRoutes.js";
 import chatRouter from "./routes/chatRoutes.js";
+import ticketRouter from "./routes/ticketRoutes.js";
 
 dotenv.config();
 
@@ -39,3 +40,5 @@ app.use("/api/mentor-requests", mentorRequestRouter);
 app.use("/api/enrollments", enrollmentRouter);
 
 app.use("/api/chat", chatRouter);
+
+app.use("/api/tickets", ticketRouter);

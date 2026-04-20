@@ -8,6 +8,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ManageListing from "./pages/ManageListing";
 import ListingDetails from "./pages/ListigDetails";
 import Messages from "./pages/Messages";
+import Support from "./pages/Suport";
 
 function App() {
   const { user, loading } = useAuth();
@@ -25,7 +26,7 @@ function App() {
         <Route path="/admin" element={user?.role === "ADMIN" ? <AdminDashboard /> : <Navigate to="/" />}/>
         <Route path="/listings/:id" element={<ListingDetails />} />
         <Route path="/manage-listing/:id" element={<ManageListing />} />
-
+        <Route path="/support" element={user ? <Support /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
