@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import { isValidEmail, isValidPassword } from "../utils/validators";
+import logo from "../assets/Logo.png";
 
 export default function Register() {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -39,7 +40,7 @@ export default function Register() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen w-full bg-[#f0f2f5] font-sans overflow-x-hidden">
       <div className="flex-1 flex flex-col justify-center items-center px-[10%] bg-white animate-fadeIn py-12 md:py-0">
-        <h1 className="text-6xl md:text-[4rem] font-extrabold text-[#1877f2] mb-4 tracking-tighter">Mentor.ba</h1>
+        <img src={logo} alt="Mentor.ba Logo" className="h-16 md:h-24 w-auto mb-6 object-contain" />
         <p className="text-xl md:text-[1.5rem] text-[#1c1e21] max-w-[500px] leading-tight text-center md:text-left">
           Uči od najboljih. Postani jedan od njih. <br />
           <span className="font-bold">Besplatno</span> se registruj i pristupi bazi mentora.

@@ -2,7 +2,9 @@ import * as listingService from "../services/listingServices.js";
 
 export const getAllListings = async (req, res) => {
   try {
-    const listings = await listingService.fetchAllListings();
+    const { search, category, minPrice, maxPrice, minRating, mode, location, sortBy } = req.query;
+    const filters = { search, category, minPrice, maxPrice, minRating, mode, location, sortBy };
+    const listings = await listingService.fetchAllListings(filters);
     res.json(listings);
   } catch (error) {
     res.status(500).json({ message: error.message });

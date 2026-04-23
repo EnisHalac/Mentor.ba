@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useRef, useCallback } from "react";
 import CreateListingModal from "./Profile/CreateListingModal"; 
+import logo from "../assets/Logo.png";
 
 export default function Navbar() {
   const { user, token, logout } = useAuth();
@@ -33,10 +34,8 @@ export default function Navbar() {
 
   useEffect(() => {
     fetchUnread();
-
     window.addEventListener("messagesRead", fetchUnread);
     const interval = setInterval(fetchUnread, 15000);
-
     return () => {
       window.removeEventListener("messagesRead", fetchUnread);
       clearInterval(interval);
@@ -69,8 +68,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
                       
-            <Link to="/" className="flex items-center gap-2">
-              <span className="text-2xl font-black text-indigo-600 tracking-tighter">MENTOR.BA</span>
+            <Link to="/" className="flex items-center group">
+              <img src={logo} alt="Mentor.ba" className="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105 contrast-[1.05] mix-blend-multiply" />
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
@@ -134,12 +133,22 @@ export default function Navbar() {
                     </Link>
                     
                     <Link 
+                      to="/support" 
+                      onClick={() => setIsOpen(false)}
+                      className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 transition font-medium"
+                    >
+                      Podrška
+                    </Link>
+
+                    <Link 
                       to="/messages" 
                       onClick={() => setIsOpen(false)}
                       className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 transition font-medium sm:hidden"
                     >
                       Poruke
                     </Link>
+
+                    <div className="border-t border-gray-100 my-1"></div>
 
                     <button 
                       onClick={handleLogout}
