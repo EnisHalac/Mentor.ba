@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/Logo.png";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -39,12 +40,16 @@ export default function Login() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen w-full bg-[#f0f2f5] font-sans overflow-x-hidden">
-      <div className="flex-1 flex flex-col justify-center items-center px-[10%] bg-white animate-fadeIn py-12 md:py-0">
-        <h1 className="text-6xl md:text-[4rem] font-extrabold text-[#1877f2] mb-4 tracking-tighter">Mentor.ba</h1>
-        <p className="text-xl md:text-[1.5rem] text-[#1c1e21] max-w-[500px] leading-tight text-center md:text-left">
-          Poveži se sa mentorima, dijeli znanje i gradi svoju karijeru na vodećoj regionalnoj platformi.
-        </p>
-      </div>
+    <div className="flex-1 flex flex-col justify-center items-center px-[10%] bg-white animate-fadeIn py-12 md:py-0">
+      <img 
+        src={logo} 
+        alt="Mentor.ba Logo" 
+        className="w-full max-w-[350px] md:max-w-[450px] h-auto object-contain mb-8" 
+      />
+      <p className="text-xl md:text-[1.5rem] text-[#1c1e21] max-w-[500px] leading-tight text-center">
+        Poveži se sa mentorima, dijeli znanje i gradi svoju karijeru na vodećoj regionalnoj platformi.
+      </p>
+    </div>
 
       <div className="flex-1 flex justify-center items-center p-6 md:p-12 animate-slideInRight">
         <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-[400px] animate-cardFade">
